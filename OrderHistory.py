@@ -3,9 +3,10 @@
 import base64
 import hashlib
 import hmac
+import json
 import time
 from collections import OrderedDict
-import json
+
 import requests
 
 from config import apikey_public
@@ -13,7 +14,7 @@ from config import apikey_secret
 from config import domain
 
 # Define Global Vars
-uri = "/order/history"
+uri = "/order/trade/history"
 url = domain + uri
 api_secret_key = apikey_secret.encode("utf-8")
 # pub_key = apikey_public.encode("utf-8")
@@ -72,7 +73,7 @@ def build_headers(URL, PUBKEY, PRIVKEY):
 
     # http://docs.python-requests.org/en/master/user/advanced/#header-ordering
     # maybe returning the ordered list to requests may provide headers with ordering
-    return json.dumps(headers_list)
+    return headers_list
 
 
 def main():
@@ -81,15 +82,15 @@ def main():
     
     TODO: Add in functionality to pass options for the CLI.
     """
-
     res = build_headers(url, pub_key, std_secret_key)
     print(res)
-    r = requests.post(url=url, json=res)
+    r = requests.post(url, data=res)
 
     # try:
     print(r)
+    print(r.text)
     print(r.headers)
-    # print(r.json())
+
 
 if __name__ == "__main__":
     main()

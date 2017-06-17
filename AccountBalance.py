@@ -28,6 +28,7 @@ def build_headers(URL, PUBKEY, PRIVKEY):
     of key value pairs in the JSON payload, build an ordered dictionary out
     of a list of tuples.
     """
+
     # Build timestamp
     tstamp = time.time()
     ctstamp = int(tstamp * 1000)  # or int(tstamp * 1000) or round(tstamp * 1000)
@@ -56,10 +57,8 @@ def build_headers(URL, PUBKEY, PRIVKEY):
                                 ("apikey", pkey),
                                 ("timestamp", sctstamp),
                                 ("signature", bsig)])
-    # Load list into dictionary
-    headers = dict(headers_list)
 
-    return headers
+    return headers_list
 
 
 def main():
