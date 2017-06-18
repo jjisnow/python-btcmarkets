@@ -20,6 +20,8 @@ api_secret_key = apikey_secret.encode("utf-8")
 # pub_key = apikey_public.encode("utf-8")
 pub_key = apikey_public
 std_secret_key = base64.standard_b64decode(api_secret_key)
+body = OrderedDict(
+    [("currency", "AUD"), ("instrument", "ETH"), ("limit", 10), ("since", 429357237)])
 
 
 def build_headers(URL, PUBKEY, PRIVKEY):
@@ -36,13 +38,10 @@ def build_headers(URL, PUBKEY, PRIVKEY):
     ctstamp = int(tstamp * 1000)  # or int(tstamp * 1000) or round(tstamp * 1000)
     str_ctstamp = str(ctstamp)
 
-    # Build Request component
-    body = OrderedDict([("currency", "AUD"), ("instrument", "ETH"), ("limit", 10), ("since", 429357237)])
-
     # Build and sign to construct body
-    sbody = uri + "\n" + str_ctstamp + "\n" + json.dumps(body) + "\n"
+    sbody = uri + "\n" + str_ctstamp + "\n" + json.dumps(body, separators=(',', ':'))
 
-    # # Fudge an ordered dictionary string
+    # # Fudge an ordered dictionary string - replaced by json.dumps(body)
     # for _ in range(len(body)):
     #     s = body.popitem(last=False)
     #     sbody += '\"' + str(s[0]) + '\":'
@@ -68,28 +67,26 @@ def build_headers(URL, PUBKEY, PRIVKEY):
                                 ("timestamp", str_ctstamp),
                                 ("signature", bsig)])
 
-    # Load list into dictionary
-    # headers = dict(headers_list)
-
     # http://docs.python-requests.org/en/master/user/advanced/#header-ordering
     # maybe returning the ordered list to requests may provide headers with ordering
     return headers_list
 
 
-def main():
+def order_history():
     """ Build the request body by invoking header function with config
-    params specified as global variables at top
-    
-    TODO: Add in functionality to pass options for the CLI.
+    params specified as global variables at top and formatting in json the body as well
     """
     res = build_headers(url, pub_key, std_secret_key)
-    print(res)
-    r = requests.post(url, data=res)
+    r = requests.post(url, headers=res, json=body)
+    return r
 
-    # try:
-    print(r)
-    print(r.text)
-    print(r.headers)
+
+def main():
+    """
+    TODO: Add in functionality to pass options for the CLI.
+    """
+    response = order_history()
+    print(json.dumps(response.json(), indent=2))
 
 
 if __name__ == "__main__":

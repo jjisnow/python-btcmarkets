@@ -72,6 +72,9 @@ def main():
     res = build_headers(url, pkey, skey)
     r = requests.get(url, headers=res, verify=True)
 
+    print(r)
+    print(r.text)
+    print(r.headers)
     # returns balances*1e8 units
     audbal = r.json()[0]
     btcbal = r.json()[1]
