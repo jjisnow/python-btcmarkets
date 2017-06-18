@@ -6,6 +6,7 @@ import hmac
 import json
 import time
 from collections import OrderedDict
+from pprint import pprint
 
 import requests
 
@@ -17,11 +18,12 @@ from config import domain
 uri = "/order/trade/history"
 url = domain + uri
 api_secret_key = apikey_secret.encode("utf-8")
-# pub_key = apikey_public.encode("utf-8")
-pub_key = apikey_public
+pub_key = apikey_public.encode("utf-8")
 std_secret_key = base64.standard_b64decode(api_secret_key)
-body = OrderedDict(
-    [("currency", "AUD"), ("instrument", "ETH"), ("limit", 10), ("since", 429357237)])
+body = OrderedDict([("currency", "AUD"),
+                    ("instrument", "ETH"),
+                    ("limit", 3),
+                    ("since", 429357237)])
 
 
 def build_headers(URL, PUBKEY, PRIVKEY):
@@ -40,17 +42,6 @@ def build_headers(URL, PUBKEY, PRIVKEY):
 
     # Build and sign to construct body
     sbody = uri + "\n" + str_ctstamp + "\n" + json.dumps(body, separators=(',', ':'))
-
-    # # Fudge an ordered dictionary string - replaced by json.dumps(body)
-    # for _ in range(len(body)):
-    #     s = body.popitem(last=False)
-    #     sbody += '\"' + str(s[0]) + '\":'
-    #     if type(s[1]) == type(''):
-    #         sbody += '\"' + str(s[1]) + '\"'
-    #     else:
-    #         sbody += str(s[1])
-    #     sbody += ","
-    # sbody = sbody[:-1] + '}'
     print(repr(sbody))
 
     # dictionary string
@@ -75,18 +66,27 @@ def build_headers(URL, PUBKEY, PRIVKEY):
 def order_history():
     """ Build the request body by invoking header function with config
     params specified as global variables at top and formatting in json the body as well
+    returns a response object from requests
     """
     res = build_headers(url, pub_key, std_secret_key)
     r = requests.post(url, headers=res, json=body)
     return r
 
 
+def print_history():
+    """
+    prints the order history, json loads converts to a dictionary, json dumps converts to text
+    """
+    response = order_history()
+    # print(json.dumps(response.json(), indent=2))
+    pprint(json.loads(response.text), indent=1, compact=False)
+
+
 def main():
     """
     TODO: Add in functionality to pass options for the CLI.
     """
-    response = order_history()
-    print(json.dumps(response.json(), indent=2))
+    print_history()
 
 
 if __name__ == "__main__":
