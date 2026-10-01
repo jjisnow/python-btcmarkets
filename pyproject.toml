@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "python-btcmarkets"
+version = "3.0.0"
+description = "Read-only BTC Markets API v3 client and command-line tools"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "GPL-3.0-or-later"
+license-files = ["Licenses/LICENSE_GPLv3.txt"]
+dependencies = ["requests>=2.32.5,<3"]
+
+[project.scripts]
+btcmarkets = "btcmarkets.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["btcmarkets*"]
+
+[tool.ruff]
+line-length = 120

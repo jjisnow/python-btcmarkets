@@ -1,11 +1,12 @@
-# This file must be populated with the account username (email
-# address), the public API key and the private API key.  When that is
-# done set the permissions so only the user account the files are run
-# in can read it (i.e. chmod 600 on *nix systems).  This file is to be
-# imported by the other scripts.
+"""Compatibility names for external scripts; configure credentials via environment.
+
+The maintained scripts use BTCMarketsClient.from_env() directly. Never put
+credentials in this tracked file. Username is unnecessary for API v3.
+"""
+
+import os
 
 username = ""
-apikey_public = ""
-apikey_secret = ""
-
+apikey_public = os.environ.get("BTCMARKETS_API_KEY", "")
+apikey_secret = os.environ.get("BTCMARKETS_API_SECRET", "")
 domain = "https://api.btcmarkets.net"
