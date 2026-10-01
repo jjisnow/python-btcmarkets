@@ -1,22 +1,20 @@
-API Error Codes
-===============
+# API v3 errors
 
-This is a list of received errors and an attempt to document what they are or what they might mean.
+The old numeric v1/v2 error notes do not apply to this client. API v3 reports
+HTTP failures with JSON fields `code` and `message`. See the
+[official error-code table](https://docs.btcmarkets.net/doc/).
 
-```json
-{"success":false,"errorCode":1,"errorMessage":"Authentication failed."}
-```
+`BTCMarketsError` exposes `status_code`, `code`, and rate-limit `headers`.
+Transport/JSON/shape failures use the same exception with no HTTP status.
+Server bodies and request credentials are not included in exception messages.
 
-Error:  1
-Type:	Authentication failure
-Notes:	Deliberately produced with a browser.
+| Status / code | Action |
+| --- | --- |
+| 401 / `InvalidAPIKey`, `InvalidAuthSignature`, `InvalidAuthTimestamp` | Check keys and computer clock; do not print secrets. |
+| 403 / `InsufficientAPIPermission` | Check read access for account/trading APIs. |
+| 404 / `MarketNotFound` | Check `btcmarkets markets`; old pairs may be unavailable. |
+| 429 / `TooManyRequests` | Wait until `x-ratelimit-reset` (Unix seconds); no automatic retries. |
+| 5xx | Exchange/server failure; decide when to retry. |
 
-
-```json
-{"success":false,"errorCode":5,"errorMessage":" error occured while trying to get balance."}
-```
-
-Error:  5
-Type:	unknown
-Notes:	Implies that authentication method works, but something else broke.
-
+Invalid local settings raise `ValueError` before a request is sent. CLI failures
+exit with status 1 and Ctrl+C exits with status 130.
